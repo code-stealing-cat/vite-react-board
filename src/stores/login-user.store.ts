@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 /**
  * 사용자의 로그인 또는 로그아웃 했을 경우 쿠키 관리를 위해 사용자에 대한 정보를 담아 둘 수 있도록 관리
+ * zustand로 관리되는 이 LoginUserStore는 프로젝트가 실행되는 동안 전역으로 사용할 수 있다.
  */
 
 // 이름 변경? LoginUserStore

@@ -20,7 +20,7 @@ export default function Authentication() {
     const [cookies, setCookie] = useCookies();
 
     // function: 네이게이트 함수
-    const navigator = useNavigate();
+    const navigate = useNavigate();
 
     // component: sign in (로그인) card 컴포넌트
     const SignInCard = () => {
@@ -70,7 +70,7 @@ export default function Authentication() {
             // 쿠키에 'accessToken'라는 이름으로 토큰 저장, 기간 저장, path: MAIN_PATH()는 MAIN_PATH()하위 경로에서는 쿠키 허용
             setCookie('accessToken', token, { expires, path: MAIN_PATH() });
             // 로그인이 완료되면 MAIN_PATH()로 이동
-            navigator(MAIN_PATH());
+            navigate(MAIN_PATH());
         }
 
         // event handler: 이메일 변경 이벤트 처리
