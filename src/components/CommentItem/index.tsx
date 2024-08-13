@@ -1,6 +1,6 @@
 import './style.css';
 import { CommentListItem } from 'types/interface';
-import defaultProfileImage from 'assets/image/karina_profile.jpeg';
+import defaultProfileImage from '@/assets/image/default-profile-image.png';
 
 interface Props {
     commentListItem: CommentListItem

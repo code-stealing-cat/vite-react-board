@@ -1,5 +1,5 @@
 import './style.css';
-import defaultProfileImage from 'assets/image/karina_profile.jpeg'
+import defaultProfileImage from '@/assets/image/default-profile-image.png';
 import { BoardListItem } from 'types/interface';
 import { useNavigate } from 'react-router-dom';
 
