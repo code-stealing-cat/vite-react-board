@@ -21,7 +21,7 @@ const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`; // 회원가입
  * @returns HttpStatus status code, message, token, expirationTime
  */
 export const signInRequest = async (requestBody: SignInRequestDto) => {
-    const result = await axios.post(SIGN_IN_URL(), requestBody)
+    return await axios.post(SIGN_IN_URL(), requestBody)
         .then(response => {
             const responseBody: SignInResponseDto = response.data;
             return responseBody;
@@ -31,7 +31,6 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
             const responseBody: ResponseDto = error.response.data;
             return responseBody;
         });
-    return result;
 }
 
 /**
@@ -40,7 +39,7 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
  * @returns 
  */
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
-    const result = await axios.post(SIGN_UP_URL(), requestBody)
+    return await axios.post(SIGN_UP_URL(), requestBody)
         .then(response => {
             const responseBody: SignUpResponseDto = response.data;
             return responseBody;
@@ -50,34 +49,30 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
             const responseBody: ResponseDto = error.response.data;
             return responseBody;
         });
-    return result;
 }
 
 // 게시물 상세
 const GET_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
-
+// 조회수 증가
 const INCREASE_VIEW_COUNT_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/increase-view-count`;
-
+// 좋아요 목록 가져오기
 const GET_FAVORITE_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite-list`;
-
+// 댓글 목록 가져오기
 const GET_COMMENT_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment-list`;
-
 // 게시물 등록
 const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
-
-// 댓글
+// 댓글 등록
 const POST_COMMENT_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment`;
-
-//
-const PUT_FAVORTE_URT = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
-
+// 좋아요 누르기
+const PUT_FAVORTE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
 // 게시물 삭제
 const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
 
 /**
- * 
- * @param boardNumber 
- * @returns 
+ * 게시물 상세
+ * @url : @GetMapping("/{boardNumber}")
+ * @param boardNumber 게시물 번호
+ * @returns GetBoardResponseDto
  */
 export const getBoardRequest = async (boardNumber: number | string) => {
     return await axios.get(GET_BOARD_URL(boardNumber))
@@ -128,6 +123,11 @@ export const getFavoriteListRequest = async (boardNumber: number | string) => {
         })
 }
 
+/**
+ * 댓글 가져오기
+ * @param boardNumber 게시물 번호
+ * @returns 댓글 목록
+ */
 export const getCommentListRequest = async (boardNumber: number | string) => {
     return await axios.get(GET_COMMENT_LIST_URL(boardNumber))
         .then(response => {
@@ -148,7 +148,7 @@ export const getCommentListRequest = async (boardNumber: number | string) => {
  * @returns 
  */
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
-    const result = await axios.post(POST_BOARD_URL(), requestBody, authorization(accessToken))
+    return await axios.post(POST_BOARD_URL(), requestBody, authorization(accessToken))
         .then(response => {
             const responseBody: PostBoardResponseDto = response.data;
             return responseBody;
@@ -158,7 +158,6 @@ export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessT
             const responseBody: ResponseDto = error.response.data;
             return responseBody;
         })
-    return result;
 }
 
 /**
@@ -184,7 +183,7 @@ export const postCommentRequest = async (boardNumber: number | string, requestBo
 // 좋아요
 export const putFavoriteRequest = async (boardNumber: number | string, accessToken: string) => {
     // PUT 메소드 같은 경우 {}에 RequestBody가 들어가는데 보낼 데이터가 없으므로 빈 값을 보냄
-    return await axios.put(PUT_FAVORTE_URT(boardNumber), {}, authorization(accessToken))
+    return await axios.put(PUT_FAVORTE_URL(boardNumber), {}, authorization(accessToken))
         .then(response => {
             const responseBody: PutFavoriteResponseDto = response.data;
             return responseBody;
@@ -245,13 +244,12 @@ const multipartFormData = { headers: { 'Content-Type': 'multipart/form-data' } }
  * @returns 
  */
 export const fileUploadRequest = async (data: FormData) => {
-    const result = await axios.post(FILE_UPLOAD_URL(), data, multipartFormData)
+    return await axios.post(FILE_UPLOAD_URL(), data, multipartFormData)
         .then(response => {
             const responseBody: string = response.data;
             return responseBody
         })
         .catch(error => {
-            return null;
+            if (!error.response) return null;
         })
-    return result;
 }

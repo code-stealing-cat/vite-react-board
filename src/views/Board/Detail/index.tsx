@@ -15,6 +15,7 @@ import { useLoginUserStore } from '@/stores'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { PostCommentRequstDto } from '@/apis/request/board'
+import { usePagination } from '@/hooks'
 import dayjs from 'dayjs'
 import { useCookies } from 'react-cookie'
 
@@ -172,18 +173,24 @@ export default function BoardDetail() {
     // state: 댓글 textarea 참조 상태
     const commentRef = useRef<HTMLTextAreaElement | null>(null);
 
+    // state: 페이지네이션 관련 상태
+    const {
+      currentPage, currentSection, viewList, viewPageList, totalSection,
+      setCurrentPage, setCurrentSection, setTotalList
+    } = usePagination<CommentListItem>(3);
+
     // state: 좋아요 리스트 상태
     const [favoriteList, setFavoriteList] = useState<FavoriteListItem[]>([]);
-    // state: 댓글 리스트 상태(임시)
-    const [commentList, setCommentList] = useState<CommentListItem[]>([]);
     // state: 좋아요 상태
     const [isFavorite, setFavorite] = useState<boolean>(false);
     // state: 좋아요 상자 보기 상태
     const [showFavorite, setShowFavorite] = useState<boolean>(false);
-    // state: 댓글 상자 보기 상태
-    const [showComment, setShowComment] = useState<boolean>(false);
+    // state: 전체 댓글 개수 상태
+    const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
     // state: 댓글 상태
     const [comment, setComment] = useState<string>('');
+    // state: 댓글 상자 보기 상태
+    const [showComment, setShowComment] = useState<boolean>(false);
 
     // function: get favorite list response 처리 함수
     const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDto | ResponseDto | null) => {
@@ -214,7 +221,8 @@ export default function BoardDetail() {
       if (code !== 'SU') return;
 
       const { commentList } = responseBody as GetCommentListResponseDto;
-      setCommentList(commentList);
+      setTotalList(commentList);
+      setTotalCommentCount(commentList.length);
     }
 
     // function: put favorite response 처리 함수
@@ -304,15 +312,18 @@ export default function BoardDetail() {
               {isFavorite ? <div className='icon favorite-fill-icon'></div> : <div className='icon favorite-light-icon'></div>}
             </div>
             <div className='board-detail-bottom-button-text'>{`좋아요 ${favoriteList.length}`}</div>
-            <div className='icon-button' onClick={onShowFavoriteClickHandler}>
-              {showFavorite ? <div className='icon up-light-icon'></div> : <div className='icon down-light-icon'></div>}
-            </div>
+            {favoriteList.length > 0 ?
+              <div className='icon-button' onClick={onShowFavoriteClickHandler}>
+                {showFavorite ? <div className='icon up-light-icon'></div> : <div className='icon down-light-icon'></div>}
+              </div> :
+              <div className='icon-empty-button'></div>
+            }
           </div>
           <div className='board-detail-bottom-button-group'>
             <div className='icon-button'>
               <div className='icon comment-icon'></div>
             </div>
-            <div className='board-detail-bottom-button-text'>{`댓글 ${commentList.length}`}</div>
+            <div className='board-detail-bottom-button-text'>{`댓글 ${totalCommentCount}`}</div>
             <div className='icon-button' onClick={onShowCommentClickHandler}>
               {showComment ? <div className='icon up-light-icon'></div> : <div className='icon down-light-icon'></div>}
             </div>
@@ -331,14 +342,23 @@ export default function BoardDetail() {
         {showComment &&
           <div className='board-detail-bottom-comment-box'>
             <div className='board-detail-bottom-comment-container'>
-              <div className='board-detail-bottom-comment-title'>{'댓글 '}<span className='emphasis'>{commentList.length}</span></div>
+              <div className='board-detail-bottom-comment-title'>{'댓글 '}<span className='emphasis'>{totalCommentCount}</span></div>
               <div className='board-detail-bottom-comment-list-container'>
-                {commentList.map(item => <CommentItem commentListItem={item} />)}
+                {viewList.map(item => <CommentItem commentListItem={item} />)}
               </div>
             </div>
             <div className='divider'></div>
             <div className='board-detail-bottom-comment-pagination-box'>
-              <Pagination />
+              {totalCommentCount > 0 &&
+                <Pagination
+                  currentPage={currentPage}
+                  currentSection={currentSection}
+                  setCurrentPage={setCurrentPage}
+                  setCurrentSection={setCurrentSection}
+                  viewPageList={viewPageList}
+                  totalSection={totalSection}
+                />
+              }
             </div>
             {loginUser !== null &&
               <div className='board-detail-bottom-comment-input-box'>
