@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
-import { PostBoardRequestDto, PostCommentRequstDto } from './request/board';
+import { PatchBoardRequestDto, PostBoardRequestDto, PostCommentRequstDto } from './request/board';
 import { ResponseDto } from './response';
 import { SignInResponseDto, SignUpResponseDto } from './response/auth';
-import { DeleteBoardResponseDto, GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto, PostBoardResponseDto, PostCommentResponseDto, PutFavoriteResponseDto } from './response/board';
+import { DeleteBoardResponseDto, GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto, PatchBoardResponseDto, PostBoardResponseDto, PostCommentResponseDto, PutFavoriteResponseDto } from './response/board';
 import { GetSignInUserResponseDto } from './response/user';
 
 const DOMAIN = 'http://localhost:4000';
@@ -63,6 +63,8 @@ const GET_COMMENT_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/bo
 const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
 // 댓글 등록
 const POST_COMMENT_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment`;
+// 게시물 수정
+const PATCH_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
 // 좋아요 누르기
 const PUT_FAVORTE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
 // 게시물 삭제
@@ -175,6 +177,20 @@ export const postCommentRequest = async (boardNumber: number | string, requestBo
         })
         .catch(error => {
             if (error.response) return null;
+            const responseBody: ResponseDto = error.response.data;
+            return responseBody;
+        })
+}
+
+// 댓글 수정
+export const patchBoardRequest = async (boardNumber: number | string, requestBody: PatchBoardRequestDto, accessToken: string) => {
+    return await axios.patch(PATCH_BOARD_URL(boardNumber), requestBody, authorization(accessToken))
+        .then(response => {
+            const responseBody: PatchBoardResponseDto = response.data;
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response) return null;
             const responseBody: ResponseDto = error.response.data;
             return responseBody;
         })
