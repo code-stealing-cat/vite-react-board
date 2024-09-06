@@ -12,6 +12,17 @@ const API_DOMAIN = `${DOMAIN}/api/v1`;
 
 const authorization = (accessToken: string) => { return { headers: { Authorization: `Bearer ${accessToken}` } } };
 
+// 공통 API 요청 함수
+const requestApi = async <T>(method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE', url: string, data?: any, config?: object): Promise<T | ResponseDto | null> => {
+    try {
+        const response = await axios({ method, url, data, ...config });
+        return response.data as T;
+    } catch (error: any) {
+        if (!error.response || !error.response.data) return null;
+        return error.response.data as ResponseDto;
+    }
+};
+
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`; // 로그인
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`; // 회원가입
 
@@ -20,17 +31,21 @@ const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`; // 회원가입
  * @param requestBody SignInRequestDto ( email, password )
  * @returns HttpStatus status code, message, token, expirationTime
  */
+// export const signInRequest = async (requestBody: SignInRequestDto) => {
+//     return await axios.post(SIGN_IN_URL(), requestBody)
+//         .then(response => {
+//             const responseBody: SignInResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response.data) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         });
+// }
+
 export const signInRequest = async (requestBody: SignInRequestDto) => {
-    return await axios.post(SIGN_IN_URL(), requestBody)
-        .then(response => {
-            const responseBody: SignInResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response.data) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        });
+    return requestApi<SignInResponseDto>('POST', SIGN_IN_URL(), requestBody);
 }
 
 /**
@@ -38,18 +53,22 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
  * @param requestBody 
  * @returns 
  */
+// export const signUpRequest = async (requestBody: SignUpRequestDto) => {
+//     return await axios.post(SIGN_UP_URL(), requestBody)
+//         .then(response => {
+//             const responseBody: SignUpResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response.data) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         });
+// }
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
-    return await axios.post(SIGN_UP_URL(), requestBody)
-        .then(response => {
-            const responseBody: SignUpResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response.data) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        });
+    return requestApi<SignUpResponseDto>('POST', SIGN_UP_URL(), requestBody);
 }
+
 
 // 게시물 상세
 const GET_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
@@ -76,155 +95,192 @@ const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/
  * @param boardNumber 게시물 번호
  * @returns GetBoardResponseDto
  */
+// export const getBoardRequest = async (boardNumber: number | string) => {
+//     return await axios.get(GET_BOARD_URL(boardNumber))
+//         .then(response => {
+//             const responseBody: GetBoardResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const getBoardRequest = async (boardNumber: number | string) => {
-    return await axios.get(GET_BOARD_URL(boardNumber))
-        .then(response => {
-            const responseBody: GetBoardResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<GetBoardResponseDto>('GET', GET_BOARD_URL(boardNumber));
 }
 
+
 /**
- * 
+ * 조회수 증가 요청
  * @param boardNumber 
  * @returns 
  */
+// export const increaseViewCountRequest = async (boardNumber: number | string) => {
+//     return await axios.get(INCREASE_VIEW_COUNT_URL(boardNumber))
+//         .then(response => {
+//             const responseBody: IncreaseViewCountResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const increaseViewCountRequest = async (boardNumber: number | string) => {
-    return await axios.get(INCREASE_VIEW_COUNT_URL(boardNumber))
-        .then(response => {
-            const responseBody: IncreaseViewCountResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<IncreaseViewCountResponseDto>('GET', INCREASE_VIEW_COUNT_URL(boardNumber));
 }
 
+
 /**
- * 
+ * 좋아요 목록 가져오기
  * @param boardNumber 
  * @returns 
  */
+// export const getFavoriteListRequest = async (boardNumber: number | string) => {
+//     return await axios.get(GET_FAVORITE_LIST_URL(boardNumber))
+//         .then(response => {
+//             const responseBody: GetFavoriteListResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const getFavoriteListRequest = async (boardNumber: number | string) => {
-    return await axios.get(GET_FAVORITE_LIST_URL(boardNumber))
-        .then(response => {
-            const responseBody: GetFavoriteListResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<GetFavoriteListResponseDto>('GET', GET_FAVORITE_LIST_URL(boardNumber));
 }
+
 
 /**
  * 댓글 가져오기
  * @param boardNumber 게시물 번호
  * @returns 댓글 목록
  */
+// export const getCommentListRequest = async (boardNumber: number | string) => {
+//     return await axios.get(GET_COMMENT_LIST_URL(boardNumber))
+//         .then(response => {
+//             const responseBody: GetCommentListResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const getCommentListRequest = async (boardNumber: number | string) => {
-    return await axios.get(GET_COMMENT_LIST_URL(boardNumber))
-        .then(response => {
-            const responseBody: GetCommentListResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<GetCommentListResponseDto>('GET', GET_COMMENT_LIST_URL(boardNumber));
 }
 
+
 /**
- * 
+ * 게시물 등록
  * @param requestBody 
  * @param accessToken 
  * @returns 
  */
+// export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
+//     return await axios.post(POST_BOARD_URL(), requestBody, authorization(accessToken))
+//         .then(response => {
+//             const responseBody: PostBoardResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
+
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
-    return await axios.post(POST_BOARD_URL(), requestBody, authorization(accessToken))
-        .then(response => {
-            const responseBody: PostBoardResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<PostBoardResponseDto>('POST', POST_BOARD_URL(), requestBody, authorization(accessToken));
 }
 
 /**
- * 댓글
+ * 댓글 등록
+
  * @param boardNumber 
  * @param requestBody 
  * @param accessToken 
  * @returns 
  */
+// export const postCommentRequest = async (boardNumber: number | string, requestBody: PostCommentRequstDto, accessToken: string) => {
+//     return await axios.post(POST_COMMENT_URL(boardNumber), requestBody, authorization(accessToken))
+//         .then(response => {
+//             const responseBody: PostCommentResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const postCommentRequest = async (boardNumber: number | string, requestBody: PostCommentRequstDto, accessToken: string) => {
-    return await axios.post(POST_COMMENT_URL(boardNumber), requestBody, authorization(accessToken))
-        .then(response => {
-            const responseBody: PostCommentResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<PostCommentResponseDto>('POST', POST_COMMENT_URL(boardNumber), requestBody, authorization(accessToken));
 }
 
-// 댓글 수정
+
+// 게시물 수정
+// export const patchBoardRequest = async (boardNumber: number | string, requestBody: PatchBoardRequestDto, accessToken: string) => {
+//     return await axios.patch(PATCH_BOARD_URL(boardNumber), requestBody, authorization(accessToken))
+//         .then(response => {
+//             const responseBody: PatchBoardResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const patchBoardRequest = async (boardNumber: number | string, requestBody: PatchBoardRequestDto, accessToken: string) => {
-    return await axios.patch(PATCH_BOARD_URL(boardNumber), requestBody, authorization(accessToken))
-        .then(response => {
-            const responseBody: PatchBoardResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<PatchBoardResponseDto>('PATCH', PATCH_BOARD_URL(boardNumber), requestBody, authorization(accessToken));
 }
+
 
 // 좋아요
-export const putFavoriteRequest = async (boardNumber: number | string, accessToken: string) => {
-    // PUT 메소드 같은 경우 {}에 RequestBody가 들어가는데 보낼 데이터가 없으므로 빈 값을 보냄
-    return await axios.put(PUT_FAVORTE_URL(boardNumber), {}, authorization(accessToken))
-        .then(response => {
-            const responseBody: PutFavoriteResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+// export const putFavoriteRequest = async (boardNumber: number | string, accessToken: string) => {
+//     // PUT 메소드 같은 경우 {}에 RequestBody가 들어가는데 보낼 데이터가 없으므로 빈 값을 보냄
+//     return await axios.put(PUT_FAVORTE_URL(boardNumber), {}, authorization(accessToken))
+//         .then(response => {
+//             const responseBody: PutFavoriteResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
 
+// }
+export const putFavoriteRequest = async (boardNumber: number | string, accessToken: string) => {
+    return requestApi<PutFavoriteResponseDto>('PUT', PUT_FAVORTE_URL(boardNumber), {}, authorization(accessToken));
 }
+
 
 // 게시물 삭제
+// export const deleteBoardRequest = async (boardNumber: number | string, accessToken: string) => {
+//     return await axios.delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
+//         .then(response => {
+//             const responseBody: DeleteBoardResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const deleteBoardRequest = async (boardNumber: number | string, accessToken: string) => {
-    return await axios.delete(DELETE_BOARD_URL(boardNumber), authorization(accessToken))
-        .then(response => {
-            const responseBody: DeleteBoardResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<DeleteBoardResponseDto>('DELETE', DELETE_BOARD_URL(boardNumber), null, authorization(accessToken));
 }
+
 
 // 로그인
 const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
@@ -234,18 +290,22 @@ const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
  * @param accessToken useCookies()에서 cookies.accessToken으로 가져온 토큰
  * @returns GetSignInUserResponseDto{code, message, email, nickname, profileImage} | ResponseDto {code, message}
  */
+// export const getSignInUserRequest = async (accessToken: string) => {
+//     return await axios.get(GET_SIGN_IN_USER_URL(), authorization(accessToken))
+//         .then(response => {
+//             const responseBody: GetSignInUserResponseDto = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         })
+// }
 export const getSignInUserRequest = async (accessToken: string) => {
-    return await axios.get(GET_SIGN_IN_USER_URL(), authorization(accessToken))
-        .then(response => {
-            const responseBody: GetSignInUserResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
+    return requestApi<GetSignInUserResponseDto>('GET', GET_SIGN_IN_USER_URL(), null, authorization(accessToken));
 }
+
 
 // 파일 업로드
 const FILE_DOMAIN = `${DOMAIN}/file`;
