@@ -1,4 +1,8 @@
-# React + TypeScript + Vite
+# React + TypeScript + Vite로 만든 게시판입니다.
+
+#메인화면
+<img width="1033" alt="스크린샷 2024-09-13 오전 9 45 33" src="https://github.com/user-attachments/assets/5239916e-70d7-45dd-a809-4b115202745a">
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
